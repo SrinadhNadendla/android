@@ -3,9 +3,13 @@
     <string name="login">Login</string>
     <string name="password">Password</string>
     <string name="email">Email</string>
-    <string name="create_account">Create Account</string>
+    <string name="create_account">dont have account? create now</string>
     <string name="register">Register</string>
     <string name="name">Name</string>
     <string name="home_deliver_car_wash_service">Home Deliver Car Wash Service</string>
-    <string name="endpoint">http://localhost:8080</string>
+    <string name="endpoint">http://34.222.124.170/</string>
+    <string name="logout">Logout</string>
+    <string name="book_a_wash">Book A Wash</string>
+    <string name="textview">TextView</string>
+    <string name="previous_bookings">Previous Bookings</string>
 </resources>

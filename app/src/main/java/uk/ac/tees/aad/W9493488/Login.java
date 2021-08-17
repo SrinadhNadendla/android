@@ -26,6 +26,7 @@ public class Login extends AppCompatActivity {
     EditText email;
     EditText password;
     SharedPreferences sharedPreferences;
+    RequestQueue requestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +34,9 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         sharedPreferences=getSharedPreferences("loginDetails", Context.MODE_PRIVATE);
+        requestQueue= Volley.newRequestQueue(this);
 
-        TextView register =  findViewById(R.id.createAccountText);
+        TextView register =  findViewById(R.id.createaccounttext);
         Button login =  findViewById(R.id.buttonReg);
          email =  findViewById(R.id.emailReg);
          password = findViewById(R.id.passwordReg);
@@ -54,34 +56,35 @@ public class Login extends AppCompatActivity {
 
     private void checkforuser() {
 
-        RequestQueue requestQueue= Volley.newRequestQueue(this);
-
-        StringRequest request  = new StringRequest(Request.Method.GET, R.string.endpoint+"/login?email="+email.getText()+"&password="+password.getText(), new Response.Listener<String>() {
+        StringRequest request  = new StringRequest(Request.Method.GET, getString(R.string.endpoint)+"/login?email="+email.getText()+"&password="+password.getText(), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                if (!response.equals("")){
-                    JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
-
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("login","yes");
-                    editor.putString("name",jsonObject.get("name").getAsString());
-                    editor.putString("email",jsonObject.get("email").getAsString());
-                    editor.putString("mobile",jsonObject.get("mobile").getAsString());
-                    editor.apply();
-                    startActivity(new Intent(getApplicationContext(),Dashboard.class));
-                }else
-                {
-                    Toast.makeText(getApplicationContext(),"Wrong Details",Toast.LENGTH_LONG).show();
-                }
+                validateData(response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Toast.makeText(getApplicationContext(),"Network Error",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"Check your Internet Connection",Toast.LENGTH_LONG).show();
             }
         });
+
         requestQueue.add(request);
+    }
+
+    private void validateData(String response) {
+        if (!response.equals("")){
+            JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("login","yes");
+            editor.putString("name",jsonObject.get("name").getAsString());
+            editor.putString("email",jsonObject.get("email").getAsString());
+            editor.putString("mobile",jsonObject.get("mobile").getAsString());
+            editor.apply();
+            startActivity(new Intent(getApplicationContext(),Dashboard.class));
+        }else
+        {
+            Toast.makeText(getApplicationContext(),"Entered Wrong Details",Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
