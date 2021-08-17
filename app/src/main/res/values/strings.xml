@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Car Wash</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="create_account">Create Account</string>
+    <string name="register">Register</string>
+    <string name="name">Name</string>
+    <string name="home_deliver_car_wash_service">Home Deliver Car Wash Service</string>
+    <string name="endpoint">http://localhost:8080</string>
 </resources>
