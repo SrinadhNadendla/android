@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -13,6 +14,8 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,12 +39,47 @@ public class Dashboard  extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     private static LatLng latLng;
     Geocoder geocoder;
+    String address;
+    String LatLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         TextView name = findViewById(R.id.nameText);
+        TextView logout = findViewById(R.id.logoutText);
+        Button btn = findViewById(R.id.button2);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),previousBookings.class);
+                SharedPreferences sharedPreferences = getSharedPreferences("loginDetails", Context.MODE_PRIVATE);
+                intent.putExtra("email",sharedPreferences.getString("email",""));
+                startActivity(intent);
+            }
+        });
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                SharedPreferences sharedPreferences = getSharedPreferences("loginDetails", Context.MODE_PRIVATE);
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("login","no");
+                editor.apply();
+                startActivity(new Intent(getApplicationContext(),Login.class));
+            }
+        });
+        Button book = findViewById(R.id.bookawash);
+        book.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent  =  new Intent(getApplicationContext(),booking.class);
+                intent.putExtra("latlng",LatLng);
+                intent.putExtra("address",address);
+                startActivity(intent);
+            }
+        });
         SharedPreferences sharedPreferences = getSharedPreferences("loginDetails", Context.MODE_PRIVATE);
         name.setText(sharedPreferences.getString("name",""));
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -54,10 +92,10 @@ public class Dashboard  extends FragmentActivity implements OnMapReadyCallback {
         mMap = googleMap;
         LatLng location = new LatLng(51.5074,0.1278);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 12.0f));
-        getCurrentLatLng(googleMap);
+        updatedata(googleMap);
     }
 
-    private void getCurrentLatLng(final GoogleMap googleMap){
+    private void updatedata(final GoogleMap googleMap){
         ActivityCompat.requestPermissions( this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -67,12 +105,10 @@ public class Dashboard  extends FragmentActivity implements OnMapReadyCallback {
         }
         else {
 
-            boolean grantedPermissions =(
+            if(
                     ActivityCompat.checkSelfPermission(Dashboard.this, Manifest.permission.ACCESS_FINE_LOCATION)  != PackageManager.PERMISSION_GRANTED &&
                             ActivityCompat.checkSelfPermission(Dashboard.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            );
-
-            if (grantedPermissions)
+            )
             {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
@@ -92,19 +128,13 @@ public class Dashboard  extends FragmentActivity implements OnMapReadyCallback {
 
                                 List<Address>  addresses = null;
                                 try {
-                                    addresses = geocoder.getFromLocation(location.getLatitude(),location.getLongitude(), 2);
-                                } catch (IOException e) {
+                                    addresses = geocoder.getFromLocation(location.getLatitude(),location.getLongitude(), 3);
+                                    address = addresses.get(0).getAddressLine(0);
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-
-                                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-
                                 Toast.makeText(getApplicationContext(),address,Toast.LENGTH_LONG).show();
-                                SharedPreferences sharedPreferences = getSharedPreferences("location",MODE_PRIVATE);
-                                SharedPreferences.Editor editer = sharedPreferences.edit();
-                                editer.putFloat("lat",(float)location.getLatitude());
-                                editer.putFloat("lng",(float)location.getLongitude());
-                                editer.apply();
+                                LatLng= loc.toString();
                             }
                         });
             }

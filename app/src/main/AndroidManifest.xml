@@ -14,7 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".booking"></activity>
+        <activity android:name=".previousBookings"></activity>
+        <activity android:name=".ConfirmBooking" />
+        <activity android:name=".booking" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
