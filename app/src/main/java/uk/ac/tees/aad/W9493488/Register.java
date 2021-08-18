@@ -69,7 +69,7 @@ public class Register extends AppCompatActivity {
                 +"&mobile="+mobile.getText()
                 +"&name="+name.getText();
 
-        Toast.makeText(this,requestURL,Toast.LENGTH_LONG).show();
+        
         StringRequest request  = new StringRequest(Request.Method.GET,requestURL , new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
